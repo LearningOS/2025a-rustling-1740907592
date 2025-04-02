@@ -50,7 +50,7 @@ mod tests {
         let sender_country = String::from("Spain");
         let recipient_country = String::from("Austria");
 
-        Package::new(seder_country, recipient_country, -2210);
+        Package::new(sender_country, recipient_country, -2210);
     }
 
     #[test]
