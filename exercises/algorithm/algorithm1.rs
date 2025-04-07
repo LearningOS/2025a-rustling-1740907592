@@ -2,11 +2,9 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -69,15 +67,42 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+    //获取链表值, 加入, 被opt包括, 使用模式匹配解码
+    //nonnull实现copy语义,默认是复制,而不是转移
+	pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self 
+where
+    T: PartialOrd + Clone, // 要求 T 可比较
+{
+    let mut merged = Self::new();
+    let mut t1 = list_a.start;
+    let mut t2 = list_b.start;
+
+    unsafe {
+        while let (Some(t1_ptr), Some(t2_ptr)) = (t1, t2) {
+            if (*t1_ptr.as_ptr()).val <= (*t2_ptr.as_ptr()).val {
+                merged.add((*t1_ptr.as_ptr()).val.clone());
+                t1 = (*t1_ptr.as_ptr()).next;
+            } else {
+                merged.add((*t2_ptr.as_ptr()).val.clone());
+                t2 = (*t2_ptr.as_ptr()).next;
+            }
         }
-	}
+
+        // 处理剩余节点
+        while let Some(ptr) = t1 {
+            merged.add((*ptr.as_ptr()).val.clone());
+            t1 = (*ptr.as_ptr()).next;
+        }
+        while let Some(ptr) = t2 {
+            merged.add((*ptr.as_ptr()).val.clone());
+            t2 = (*ptr.as_ptr()).next;
+        }
+    }
+
+    merged
+}
+	
+
 }
 
 impl<T> Display for LinkedList<T>
